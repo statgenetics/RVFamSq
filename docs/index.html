@@ -80,10 +80,9 @@
 <div id="setup" class="section level2">
 <h2 class="hasAnchor">
 <a href="#setup" class="anchor"></a>Setup</h2>
-<p>To install and load the package,</p>
+<p>To install the package,</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"devtools"</span>)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">'statgenetics/RVFamSq'</span>)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"RVFamSq"</span>)</code></pre></div>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">'statgenetics/RVFamSq'</span>)</code></pre></div>
 </div>
 <div id="developer-notes" class="section level2">
 <h2 class="hasAnchor">
@@ -93,10 +92,12 @@
 devtools::<span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/document">document</a></span>()</code></pre></div>
 <p>Please <strong>do not</strong> manually edit any <code>.Rd</code> files under <code>man</code> folder!</p>
 <p>To build the documentation website (make sure you are connected to Internet while running these commands):</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(pkgdown)
-<span class="kw"><a href="https://pkgdown.r-lib.org/reference/build_site.html">build_site</a></span>()</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/getwd">setwd</a></span>(<span class="st">"/path/to/package/root"</span>)
+devtools::<span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/document">document</a></span>()
+pkgdown::<span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/build_site">build_site</a></span>()</code></pre></div>
 <p>To install locally from source code via <code>devtools</code>,</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/getwd">setwd</a></span>(<span class="st">"/path/to/package/root"</span>)
+devtools::<span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/document">document</a></span>()
 devtools::<span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/install">install</a></span>()</code></pre></div>
 </div>
 </div>

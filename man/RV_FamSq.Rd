@@ -56,8 +56,19 @@ A regional association analysis of rare variants and quantitative traits in
 family data
 }
 \details{
-%% ~~ If necessary, more details than the description above ~~
+RVFamSq estimates the parameter under the null model by Association can be tested by maximizing the multivariate normal likelihood:
+\deqn{\beta \cdots X_1 whatever} (add formula here using LaTeX syntax)
 }
+\section{Data format}{
+
+Test data is generated for 100 nuclear families with sib-pairs and 100 sites of variants for each individual. The quantitative traits and MAF of variants are sampled randomly. The genotype of these samples are generated according to the MAF of each variant.
+\itemize{
+\item{\strong{test.pheno}} {A phenotype file of 100 nuclear families and 100 sites of variants for each individual. The first five columns of the file should be family IDs, individual IDs, father IDs, mother IDs, sex, respectively. The interested covariates and trait for each sample could be listed in the rest columns of the file. RVFamSq is capable to analyze multiple covariates. Each family should have information of two founders, and all individuals in test.geno should be included in this file.}
+\item{\strong{test.geno}} {A genotype file of samples included in the test.pheno file. The first two columns of the file should be family IDs and individual IDs that have the same format as in test.pheno. The rest columns of the file are genotypes of each individual and codes as 0, 1, and 2.}
+\item{\strong{test.sfs}} {A file with descriptive information for 100 genetic variants in test.geno. The file contains four columns representing the name of the interested gene, chromosome, position, and MAF of the variant, respectively.}
+}
+}
+
 \examples{
 
 library (kinship2)

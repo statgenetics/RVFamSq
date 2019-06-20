@@ -15,12 +15,11 @@ introduction to `RVFamSq`.
 
 ## Setup
 
-To install and load the package,
+To install the package,
 
 ```R
 library("devtools")
 install_github('statgenetics/RVFamSq')
-library("RVFamSq")
 ```
 
 ## Developer notes
@@ -37,13 +36,15 @@ To build the documentation website (make sure you are
 connected to Internet while running these commands):
 
 ```R
-library(pkgdown)
-build_site()
+setwd("/path/to/package/root")
+devtools::document()
+pkgdown::build_site()
 ```
 
 To install locally from source code via `devtools`, 
 
 ```R
 setwd("/path/to/package/root")
+devtools::document()
 devtools::install()
 ```

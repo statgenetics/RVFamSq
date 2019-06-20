@@ -181,7 +181,17 @@ load from the file <code>parafile</code>.</p></dd>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><!-- %% ~~ If necessary, more details than the description above ~~ --></p>
+    <p>RVFamSq estimates the parameter under the null model by Association can be tested by maximizing the multivariate normal likelihood:
+$$\beta \cdots X_1 whatever$$ (add formula here using LaTeX syntax)</p>
+    
+    <h2 class="hasAnchor" id="data-format"><a class="anchor" href="#data-format"></a>Data format</h2>
+
+    
+    <p>Test data is generated for 100 nuclear families with sib-pairs and 100 sites of variants for each individual. The quantitative traits and MAF of variants are sampled randomly. The genotype of these samples are generated according to the MAF of each variant.</p><ul>
+<li><p><strong>test.pheno</strong> A phenotype file of 100 nuclear families and 100 sites of variants for each individual. The first five columns of the file should be family IDs, individual IDs, father IDs, mother IDs, sex, respectively. The interested covariates and trait for each sample could be listed in the rest columns of the file. RVFamSq is capable to analyze multiple covariates. Each family should have information of two founders, and all individuals in test.geno should be included in this file.</p></li>
+<li><p><strong>test.geno</strong> A genotype file of samples included in the test.pheno file. The first two columns of the file should be family IDs and individual IDs that have the same format as in test.pheno. The rest columns of the file are genotypes of each individual and codes as 0, 1, and 2.</p></li>
+<li><p><strong>test.sfs</strong> A file with descriptive information for 100 genetic variants in test.geno. The file contains four columns representing the name of the interested gene, chromosome, position, and MAF of the variant, respectively.</p></li>
+</ul>
     
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
@@ -224,6 +234,8 @@ Tests for Genomewide Association Scans. Am. J. Hum. Genet. 81, 913–926.<br /><
       <li><a href="#value">Value</a></li>
 
       <li><a href="#details">Details</a></li>
+
+      <li><a href="#data-format">Data format</a></li>
 
       <li><a href="#references">References</a></li>
       
