@@ -33,7 +33,7 @@
 #' the gene under the directory defined by the argument \code{out}.}
 #' \item{paras}{a list of parameters estimated by maximizing the likelihood.
 #' The values of the paras save to the file defined by the argument
-#' \code{parafile}”. If the \code{parafile} is existed, the values of the paras
+#' \code{parafile}. If the \code{parafile} is existed, the values of the paras
 #' load from the file \code{parafile}.}
 #' @author Zhihui Zhang and Suzanne Leal
 #' @details RVFamSq estimates the parameter under the null model by Association can be tested by maximizing the multivariate normal likelihood:

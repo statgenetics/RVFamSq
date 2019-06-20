@@ -48,7 +48,7 @@ the value of the score and p-value write into the file named by the name of
 the gene under the directory defined by the argument \code{out}.}
 \item{paras}{a list of parameters estimated by maximizing the likelihood.
 The values of the paras save to the file defined by the argument
-\code{parafile}”. If the \code{parafile} is existed, the values of the paras
+\code{parafile}. If the \code{parafile} is existed, the values of the paras
 load from the file \code{parafile}.}
 }
 \description{
