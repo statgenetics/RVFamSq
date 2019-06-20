@@ -24,8 +24,8 @@
 #' with the name of the gene, score, p-value of the gene, number of sample size
 #' and number of families
 #' @param kin a kinship matrix calculated from the pedigree using the
-#' “kinship2” package
-#' @param start-par an optional argument that defines the starting values of
+#' \code{kinship2} package
+#' @param start_par an optional argument that defines the starting values of
 #' the parameters fitting. User can define specific values to start the
 #' parameters fitting, otherwise, the starting values will generate randomly.
 #' @return \item{results}{a data frame results containing the name of the gene,
