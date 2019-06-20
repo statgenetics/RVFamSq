@@ -18,6 +18,7 @@ Imports:
     mvtnorm,
     rlist
 Suggests:
+    kinship2,
     testthat,
     knitr,
     rmarkdown
