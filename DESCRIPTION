@@ -1,0 +1,26 @@
+Package: RVFamSq
+Type: Package
+Encoding: UTF-8
+Title: A regional association analysis of rare variants and
+        quantitative train in family data
+Version: 0.1.0.0
+Date: 2019-03-08
+Authors@R: c(person("Zhihui","Zhang",role=c("aut","cre"),
+                    email="zhangzhhcb@gmail.com"),
+             person("Suzanne","Leal",role="aut"))
+Description: A package for family-based association analysis of rare variants and quantitative traits
+URL: https://github.com/statgenetics/RVFamSq
+BugReports: https://github.com/statgenetics/RVFamSq/issues
+License: BSD_3_clause + file LICENSE
+LazyData: true
+Imports:
+    bbmle,
+    mvtnorm,
+    rlist
+Suggests:
+    testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+NeedsCompilation: no
+RoxygenNote: 6.1.1
