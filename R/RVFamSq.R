@@ -78,43 +78,73 @@
 #' @import mvtnorm 
 #' @import rlist
 #' @export
-RV_FamSq <- function(genofile, phenofile, maffile, parafile,covar_col, trait_col, out,kin, start_par=NULL) {
+RV_FamSq <- function(ped_pheno, ped_geno, maf_data, maf_cutoff,parafile,covar_col, trait_col, pop_col=c(), out,kin, estimateAF,start_par) {
   library(bbmle)
   library(mvtnorm)
   library(rlist)
-
-  if(!file.exists(genofile)) stop("Genotype data does not exist.")
-  if(!file.exists(maffile)) stop("MAF data does not exist.")
-  if(!file.exists(phenofile)) stop("Phenotype data does not exist.")
-
-
-  ped_pheno<-as.matrix(read.table(phenofile))
-  ped_geno<-as.matrix(read.table(genofile))
-  maf_data<-as.matrix(read.table(maffile))
-
-  if (ped_pheno[,2] %contain% ped_geno[,2]) {
-
-    miss_index<-which(is.na(ped_pheno[,covar_col]) | is.na(ped_pheno[,trait_col]))
-
-    if(length(miss_index)>0) {
-      print("Delete samples without the data of phenotype and covariant")
-      ped_pheno<-ped_pheno[-miss_index,]
-    }
-
-    ped_pheno<-ped_pheno[,c(1:4,covar_col,trait_col)]
-    geno_index<-match(ped_pheno[,2],ped_geno[,2])
-    ped_data<-cbind(ped_pheno,ped_geno[geno_index,3:ncol(ped_geno)])
-
-  } else {
-    stop("Some samples in phenotype file miss the genotype data")
+  
+  #change dataframe to matrix by accelerating speed
+  ped_pheno<-as.matrix(ped_pheno)
+  ped_geno<-as.matrix(ped_geno)
+  maf_data<-as.matrix(maf_data)
+  
+  if ((ncol(ped_geno)-2)!=nrow(maf_data)) stop("Dimension of genotype and number of varints in MAF file does not match")
+  
+  #choose RVs based on cutoff of MAF
+  maf_pre<-matrix(as.numeric(maf_data[,4:ncol(maf_data)]),nrow=nrow(maf_data),ncol=ncol(maf_data)-3)
+  rvs_index<-unique(which(maf_pre<maf_cutoff | is.na(maf_pre),arr.ind = TRUE)[,1])
+  maf<-maf_pre[rvs_index,]
+  colnames(maf)<-colnames(maf_data)[4:ncol(maf_data)]
+  ped_geno<-ped_geno[,c(1,2,2+rvs_index)]
+  
+  #Delete samples without phenotypes or covariants
+  miss_index<-which(is.na(ped_pheno[,covar_col]) | is.na(ped_pheno[,trait_col]))
+  if(length(miss_index)>0) {
+    print("Delete samples without the data of phenotype and covariant")
+    ped_pheno<-ped_pheno[-miss_index,]
   }
+  ped_pheno<-ped_pheno[,c(1:4,covar_col,trait_col,pop_col)]
+  
+  #Estimate mising MAF using external source or by dosage of founders
+  if (length(which(is.na(maf))>0)) {
+    na_index<-which(is.na(maf),arr.ind = TRUE)
+    if (!missing(estimateAF)) {
+      print("Estimate missing MAF using external 'estimateAF'")
+      af_index<-sapply(colnames(maf), function(x) grep(x,colnames(estimateAF)))
+      maf[na_index]<-as.numeric(estimateAF[af_index[na_index[,2]]])
+    } else {
+      print("Estimate missing MAF using founders' dosage.")
+      founders<-ped_pheno[which((is.na(ped_pheno[,3]) & is.na(ped_pheno[,4])) | (ped_pheno[,3]==0 & ped_pheno[,4]==0)),2]
+      founders_index<-match(founders, ped_geno[,2])
+      na_ind<-which(!is.na(ped_geno[founders_index,3:ncol(ped_geno)]),arr.ind = TRUE)
 
+      if (nrow(na_ind)>0) {
+          print(paste(c("Estimate MAF based on dosage from", nrow(na_ind),"founders."),collapse = " "))
+          maf[na_index]<-colSums(matrix(as.numeric(ped_geno[cbind(founders_index[na_ind[,1]],2+na_ind[,2])]),nrow=nrow(na_ind)))/(2*nrow(na_ind))
+        } else {
+          stop("No founders to estimate missing MAF, please refer optional methods to estimate missing MAF and input it as 'estimateAF'")
+      }
+    }
+  }
+  
+  #Merge phenotype and genotype of the data
+  ped_data<-as.matrix(merge(ped_pheno,ped_geno,by.x=c(1,2),by.y=c(1,2)))
+    
+  #get updated column number for the new merging ped_data
   covar_update_col<-c(5:(4+length(covar_col)))
   trait_update_col<-c(5+length(covar_col))
-  geno_update_col<-c((6+length(covar_col)):ncol(ped_data))
-
-  genos<-ped_data[,geno_update_col]
-
+  pop_update_col<-c((6+length(covar_col)))
+  geno_update_col<-c((7+length(covar_col)):ncol(ped_data))
+  
+  #assign geno score to missing genotypes based on binormial distribution using MAF
+  if (length(which(is.na(ped_data[,geno_update_col]))>0)) {
+    na_geno_index<-which(is.na(ped_data[,geno_update_col]),arr.ind = TRUE)
+    maf_list<-maf[cbind(na_geno_index[,2],as.numeric(ped_data[na_geno_index[,1],pop_update_col]))]
+    ped_data[cbind(na_geno_index[,1],geno_update_col[na_geno_index[,2]])]<-sapply(maf_list, function(x) sum(rbinom(2,1,x)))
+  }
+  
+  genos<-matrix(as.numeric(ped_data[,geno_update_col]),ncol=nrow(maf),nrow = nrow(ped_data))
+  
   if(missing(kin)) {
     stop("Kinship matrix is missing.")
   } else {
@@ -124,12 +154,11 @@ RV_FamSq <- function(genofile, phenofile, maffile, parafile,covar_col, trait_col
       stop("Some samples in pedfile are not included in Kinship matrix")
     }
   }
-
-  if (ncol(genos)!=nrow(maf_data)) stop("Dimension of genotype and number of varints in MAF file does not match")
-
+  
+  
   if(!file.exists(parafile)) {
     par_num<-3+length(covar_col)
-    if(is.null(start_par)) {
+    if(missing(start_par)) {
       print("Starting values of parameters are not defined, generating random initial values now...")
       start_par<-runif(par_num,-1,1)
     } else {
@@ -138,33 +167,36 @@ RV_FamSq <- function(genofile, phenofile, maffile, parafile,covar_col, trait_col
         start_par<-runif(par_num,-1,1)
       }
     }
-
+    
     if (length(covar_col)>1) {
       assign("betax_names",paste0("betax",1:length(covar_col)), envir=.GlobalEnv)
     } else {
       assign("betax_names","betax", envir=.GlobalEnv)
     }
-
+    
     paras <- start_par
     names(paras)<-c("miu",betax_names,"sitag","sitae")
-    assign("simdata", list(id=ped_data[,2],pheno=ped_data[,trait_update_col],covar=ped_data[,covar_update_col],famids=ped_data[,1],genos=genos, maf=maf_data[,4]), envir=.GlobalEnv)
+    
+    covs<-as.numeric(ped_data[,covar_update_col])
+    covs<-matrix(covs,nrow(ped_data),length(covar_update_col))
+    
+    assign("simdata", list(id=ped_data[,2],pheno=as.numeric(ped_data[,trait_update_col]),covar=covs,famids=ped_data[,1],genos=as.numeric(genos), maf=as.numeric(maf)), envir=.GlobalEnv)
     print(paste("Estimating the values of parameters",paste(names(paras),collapse = ","),sep = " "))
     nullmod<-nlf_fit(paras)
     paras<-as.list(coef(nullmod))
     list.save(paras, parafile)
-    RV_FamSq(pedfile, phenofile, maffile, parafile,covar_col, trait_col, out,kin)
   } else {
     print("Reading parameters from parafile... ")
     paras<-list.load(parafile)
     print(unlist(paras))
-
+    
     peds_grp_by_fam<-split(seq_len(nrow(ped_data)),ped_data[,1])
-    scores<-unlist(lapply(peds_grp_by_fam, function(x) Tscore(ped_data[unlist(x),],as.numeric(maf_data[,4]),paras,covar_update_col,trait_update_col,geno_update_col)))
+    scores<-unlist(lapply(peds_grp_by_fam, function(x) Tscore(ped_data[unlist(x),],maf,maf_cutoff,paras,covar_update_col,trait_update_col,pop_update_col,geno_update_col)))
     upper<-sum(scores[seq(1,length(scores),2)])
     lower<-sum(scores[seq(2,length(scores),2)])
     score<-upper^2/lower
     p=pchisq(score,df=1)
-
+    
     gene_name=as.character(maf_data[1,1])
     out<-paste(c(out,"/", gene_name,".out"),collapse ="")
     pout<-data.frame(gene=gene_name, score=score, p=1-p, sample_size=nrow(ped_data), family_size=length(unique(ped_data[,1])))
