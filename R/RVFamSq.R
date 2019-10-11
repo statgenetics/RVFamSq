@@ -3,8 +3,7 @@
 #' A regional association analysis of rare variants and quantitative traits in
 #' family data
 #'
-#' @param genofile referring to the path of the genotype file. The columns in
-#' the file represent family IDs, individual IDs and genotypes of each
+#' @param ped_pheno a dataframe of phenotype. The first four columns should be family IDs, individual IDs, father IDs and mother IDs of  and genotypes of the sample. The ped_pheno can also include columns of covariates and populations groups. The values in the column of populations groups indicate which corresponding MAF will be used in the model.   
 #' individual. The file should not have header.
 #' @param phenofile referring to the path of the phenotype file. The first five
 #' columns in the file should be family IDs,individual IDs, father IDs, mother
