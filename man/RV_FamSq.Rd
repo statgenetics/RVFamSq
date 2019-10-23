@@ -4,41 +4,48 @@
 \alias{RV_FamSq}
 \title{Rare Variant-Family-Based Score Test for Quantitative Traits}
 \usage{
-RV_FamSq(genofile, phenofile, maffile, parafile, covar_col, trait_col, out,
-  kin, start_par = NULL)
+RV_FamSq(ped_pheno, ped_geno, maf_data, maf_cutoff, parafile, covar_col,
+  trait_col, pop_col = c(), out, kin, estimateAF, start_par)
 }
 \arguments{
-\item{genofile}{referring to the path of the genotype file. The columns in
-the file represent family IDs, individual IDs and genotypes of each
-individual. The file should not have header.}
+\item{ped_pheno}{a dataframe of phenotype. The first four columns should be family IDs, 
+individual IDs, father IDs and mother IDs of each sample.
+The ped_pheno can also include columns of covariates and populations IDs. 
+The populations IDs indicate which corresponding MAF will be used in the model.}
 
-\item{phenofile}{referring to the path of the phenotype file. The first five
-columns in the file should be family IDs,individual IDs, father IDs, mother
-IDs, and sex, respectively. The rest columns of the file are covariates and
-trait. The covariates may be multi-columns and trait should be one column.
-The file should not have header.}
+\item{ped_geno}{a dataframe of genotype. The first two columns are family IDs and individual IDs. 
+The rest columns of the ped_geno are genotype score at each sites. The value of genotype score is 0, 1 or 2,
+corresponding to number of rare variants observed at each sites. Number of sites included in ped_geno should be equal to the number of rows 
+of \code{maf_data}.}
 
-\item{maffile}{the path to the .sfs file describing the information of
-variants in the genotype file.}
+\item{maf_data}{a dataframe describing the information of rare variants included in ped_geno.
+The first three columns correspond to the name of the gene, chromosome number, and position of variants. The rest columns of maf_data
+are MAFs of variants in each specific population group obtained from database, e.g., Genome Aggregation Database (gnomAD).}
 
-\item{parafile}{the path to the file saving parameters estimated in null
-model. If the file is not existed, the package will estimate the parameters
-using the available data and save the values of the parameters in parafile.}
+\item{maf_cutoff}{the cutoff of MAF for rare variants}
 
-\item{covar_col}{a vector defining the index of columns of covariates in
-\code{phenofile}.}
+\item{parafile}{the path to the file saving parameters estimated under the null model.
+If the file is not existed, the package will estimate the parameters
+using the available data and create a parafile in the path.}
 
-\item{trait_col}{an integer number defining the column of interested trait
-in \code{phenofile}.}
+\item{covar_col}{a integer or a vector of integers indicating which columns of \code{ped_pheno} will be used as covariants of the analysis. Note that 
+multiple covariants are allowed in the analysis.}
 
-\item{out}{the directory that save the results. RVFamSq produces output file
-with the name of the gene, score, p-value of the gene, number of sample size
+\item{trait_col}{a integer indicating which columns of \code{ped_pheno} will be used as traits.}
+
+\item{pop_col}{a integer indicating which columns of \code{ped_pheno} describe the population group of the sample.}
+
+\item{out}{the directory that save the results. RVFamSq outputs a dataframe results including
+the name of the gene, score, p-value of the gene, number of sample size
 and number of families}
 
-\item{kin}{a kinship matrix calculated from the pedigree using the
-“kinship2” package}
+\item{kin}{a kinship matrix calculated either based on family strtuctures or genomic informations.}
 
-\item{start-par}{an optional argument that defines the starting values of
+\item{estimateAF}{a dataframe of estimated MAFs that do not oberserved in public datasets. The headers decribing the name 
+of the sub-population should be consistent with the headers in \code{maf_data}. If this argument is not defined, RVfamSq will
+estimate the missing MAF based on the dosage of founder.}
+
+\item{start_par}{an optional argument that defines the starting values of
 the parameters fitting. User can define specific values to start the
 parameters fitting, otherwise, the starting values will generate randomly.}
 }
@@ -54,18 +61,41 @@ load from the file \code{parafile}.}
 \description{
 A regional association analysis of rare variants and quantitative traits in
 family data
+RV_FamSq <- function(ped_pheno, ped_geno, maf_data, maf_cutoff,parafile,covar_col, trait_col, pop_col=c(), out,kin, estimateAF,start_par)
 }
 \details{
-RVFamSq estimates the parameter under the null model by Association can be tested by maximizing the multivariate normal likelihood:
-\deqn{\beta \cdots X_1 whatever} (add formula here using LaTeX syntax)
+RVFamSq performed association analysis by estimating the parameters under the null model and calculating the statistical score using these parameters.
+The parameters are estimated by maximizing the multivariate normal likelihood: 
+\deqn{L=\prod_{i}(2\pi)^{-n_i / 2}\left |\Omega _i\right |^{-1 /2}e^{\left [ y_i - E(y_i)\right ]'\Omega _i^{-1}\left [ y_i - E(y_i)\right ]}} 
+where \eqn{n_i} is the number of individuals in family i and \eqn{\left |\Omega _i\right |} is the determinant of matrix \eqn{\Omega _i}. \eqn{E(y_i)} in the above
+function is a vector of expected phenotype of all individuals within each family and is calculated by: 
+\deqn{E(y_i)=\mu + \beta _x x_i}
+where \eqn{x_i} is a \eqn{n_i \times q} matrix of q covariates included in the association analysis. The parameters \eqn{\mu} and \eqn{\beta _x} are population mean and a vector of covariate effects. 
+The two parameters are estimated by maximizing the above likelihood function. The matrix \eqn{\Omega_i} in the likelihood function is calculated within each family i and defined as:
+\deqn{\Omega  _{ijk}\left\{\begin{matrix}\sigma _g^2 + \sigma_e^2\ \ \ \ \ \ \ \ \ \ \ \ \ if\  j=k\\
+2\varphi _{ijk}\sigma _g^2\ \ \ \ \ \ \ \ \ \ \ \ if\ i\neq k 
+\end{matrix}\right.}
+Here, the parameter \eqn{\sigma_g^2} and\eqn{\sigma_e^2} are variance components that are account for background polygenic effects
+and environmental effects, respectively. Additionally, \eqn{\Omega _{ijk}} denote the kinship coefficient between individuals j and k. 
+The values of parameters \eqn{\sigma_g^2}, \eqn{\sigma_e^2}, \eqn{\beta_x}, and \eqn{\mu} are estimated by maximizing the above likelihood.
+With the values of these parameters, we can obtain the variance-covariance matrix  \eqn{\Omega _i^{base}} and vector \eqn{E(y_i)^{base}} based on the above equations for each family. 
+Using these two quantities, the statistic score is defined by:
+\deqn{T^{SCORE}=\frac{\left \{ \sum _i \left [G_i -E(G_i)\right ]'[\Omega _i^{(base)}]^{-1}[y_i-E(y_i)^{(base)}] \right \}^2}{\sum _i[G_i-E(G_i)]'[\Omega_i^{(base)}]^{-1}[G_i-E(G_i)^{(base)}] }}
+where \eqn{E(G_i)} is defined as:
+\deqn{E(G_i)=\sum_{m=1}^{M}2p_m}
+where \eqn{p_m} is the minor allele frequency (MAF) which is obtain from the dataframe of \code{maf_data}.
 }
 \section{Data format}{
 
-Test data is generated for 100 nuclear families with sib-pairs and 100 sites of variants for each individual. The quantitative traits and MAF of variants are sampled randomly. The genotype of these samples are generated according to the MAF of each variant.
+Example data is generated for 1,000 extended families with 10 members in each family. The information of RVs within functional region of the gene AAAS with MAF<2% are obtained from gnomeAD. 
+Quantitative traits are generated randomly based on the disribution of N(0,1) and genotypes of samples are generated based on MAF of the gene AAAS.
 \itemize{
-\item{\strong{test.pheno}} {A phenotype file of 100 nuclear families and 100 sites of variants for each individual. The first five columns of the file should be family IDs, individual IDs, father IDs, mother IDs, sex, respectively. The interested covariates and trait for each sample could be listed in the rest columns of the file. RVFamSq is capable to analyze multiple covariates. Each family should have information of two founders, and all individuals in test.geno should be included in this file.}
-\item{\strong{test.geno}} {A genotype file of samples included in the test.pheno file. The first two columns of the file should be family IDs and individual IDs that have the same format as in test.pheno. The rest columns of the file are genotypes of each individual and codes as 0, 1, and 2.}
-\item{\strong{test.sfs}} {A file with descriptive information for 100 genetic variants in test.geno. The file contains four columns representing the name of the interested gene, chromosome, position, and MAF of the variant, respectively.}
+\item{\strong{ped_pheno.txt}} {A phenotype file of 1,000 extended families (10,000 individuals in total). Each column of the file represents family IDs, individual IDs, father IDs, mother IDs, sex, traits, and population IDs, respectively. 
+RVFamSq is capable to analyze multiple covariates and extra covariants should be also included in this file after the fourth column.}
+\item{\strong{ped_geno.txt}} {A genotype file of samples included in the ped_pheno.txt file. The first two columns of the file should be family IDs and individual IDs that have the same format as in ped_pheno.txt. 
+The rest columns of the file are genotypes of each individual and codes as 0, 1, and 2.}
+\item{\strong{AAAS.sfs}} {A file with descriptive information of RVs within the functional region of the gene AAAS. The file contains four columns representing the name of the interested gene, chromosome, position, and MAF of the variant, respectively.
+If more than one sub-populations are included in the samples, multiple MAFs correspond to each specific population should be included in this file and denoted by headers of population specific symbols}
 }
 }
 
@@ -74,27 +104,26 @@ Test data is generated for 100 nuclear families with sib-pairs and 100 sites of 
 library (kinship2)
 library (RVFamSq)
 
-##  Define variables pointing to the path to the example data
+##  load example data
 data_dir<-system.file("data", package = "RVFamSq")
-maffile<-paste0(data_dir,"/test.sfs")
-genofile<-paste0(data_dir, "test.geno")
-phenofile<-paste0(data_dir,"/test.pheno")
-
-##  Define output directory that save the results
-out<-"/directory-to-save-the-results"
+ped_pheno<-read.table(phenofile<-paste0(data_dir,"/ped_pheno.txt"))
+ped_geno<-read.table(paste0(data_dir, "/ped_geno.txt"))
+maf_data<-read.table(paste0(data_dir,"/AAAS.sfs"), header = TRUE)
 
 ## Define the files that save the parameters estimated under the null model.
 ## If the file is not existed, the package will estimate the parameters based on the available data.
-parafile<-"/ directory-to-example-data /paras.rds"
+parafile<-paste0(data_dir,"/results/paras.rds")
 
-## Load phenotype data and calculate the kinship matrix of the pedigree.
-ped_pheno<-read.table(phenofile)
+##  Define output directory that save the results
+out<-paste0(data_dir,"/results")
+
+## Load phenotype data and calculate the kinship matrix of the pedigree. In this example, we utilize the R package to estimate the kinship of samples based on family structure, but the kinship can also be estimated by genetic variants.
 kin_pre<-data.frame(id=ped_pheno[,2], mom=ped_pheno[,4], dad=ped_pheno[,3], sex=ped_pheno[,5])
 tped <- with(kin_pre, pedigree(id, dad, mom, sex, famid=ped_pheno[,1]))
 kin <- kinship(tped)
 
 ## Run RVFamsSq package and calculate the statistical score of the interested gene.
-RV_FamSq(pedfile, phenofile, maffile, parafile, c(5,7), 6, out,kin)
+RV_FamSq(ped_pheno=ped_pheno, ped_geno=ped_geno, maf_data=maf_data, maf_cutoff =0.02,parafile=parafile,covar_col=c(5), trait_col=c(6), pop_col=c(7),out=out, kin=kin)
 
 }
 \references{
