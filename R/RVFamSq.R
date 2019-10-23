@@ -81,7 +81,7 @@
 #' ##  load example data
 #' data_dir<-system.file("data", package = "RVFamSq")
 #' ped_pheno<-read.table(phenofile<-paste0(data_dir,"/ped_pheno.txt"))
-#' ped_geno<-read.table(paste0(data_dir, "ped_geno.txt"))
+#' ped_geno<-read.table(paste0(data_dir, "/ped_geno.txt"))
 #' maf_data<-read.table(paste0(data_dir,"/AAAS.sfs"), header = TRUE)
 #' 
 #' ## Define the files that save the parameters estimated under the null model.
