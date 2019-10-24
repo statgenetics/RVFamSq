@@ -8,13 +8,11 @@
 
 <title>Rare Variant-Family-Based Score Test for Quantitative Traits — RV_FamSq • RVFamSq</title>
 
-
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -34,13 +32,11 @@
 
 
 
-
 <meta property="og:title" content="Rare Variant-Family-Based Score Test for Quantitative Traits — RV_FamSq" />
-<meta property="og:description" content="A regional association analysis of rare variants and quantitative traits in
-family data
-RV_FamSq &amp;lt;- function(ped_pheno, ped_geno, maf_data, maf_cutoff,parafile,covar_col, trait_col, pop_col=c(), out,kin, estimateAF,start_par)" />
-<meta name="twitter:card" content="summary" />
 
+<meta property="og:description" content="A regional association analysis of rare variants and quantitative traits in
+family data" />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -84,6 +80,7 @@ RV_FamSq &amp;lt;- function(ped_pheno, ped_geno, maf_data, maf_cutoff,parafile,c
   <a href="../reference/index.html">Functions</a>
 </li>
       </ul>
+      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/statgenetics/RVFamSq">Source</a>
@@ -107,14 +104,15 @@ RV_FamSq &amp;lt;- function(ped_pheno, ped_geno, maf_data, maf_cutoff,parafile,c
     </div>
 
     <div class="ref-description">
+    
     <p>A regional association analysis of rare variants and quantitative traits in
-family data
-RV_FamSq &lt;- function(ped_pheno, ped_geno, maf_data, maf_cutoff,parafile,covar_col, trait_col, pop_col=c(), out,kin, estimateAF,start_par)</p>
+family data</p>
+    
     </div>
 
     <pre class="usage"><span class='fu'>RV_FamSq</span>(<span class='no'>ped_pheno</span>, <span class='no'>ped_geno</span>, <span class='no'>maf_data</span>, <span class='no'>maf_cutoff</span>, <span class='no'>parafile</span>, <span class='no'>covar_col</span>,
   <span class='no'>trait_col</span>, <span class='kw'>pop_col</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(), <span class='no'>out</span>, <span class='no'>kin</span>, <span class='no'>estimateAF</span>, <span class='no'>start_par</span>)</pre>
-
+    
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -184,7 +182,7 @@ the parameters fitting. User can define specific values to start the
 parameters fitting, otherwise, the starting values will generate randomly.</p></td>
     </tr>
     </table>
-
+    
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     
@@ -197,6 +195,7 @@ The values of the paras save to the file defined by the argument
 <code>parafile</code>. If the <code>parafile</code> is existed, the values of the paras
 load from the file <code>parafile</code>.</p></dd>
 
+    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>RVFamSq performed association analysis by estimating the parameters under the null model and calculating the statistical score using these parameters.
@@ -219,6 +218,7 @@ $$T^{SCORE}=\frac{\left \{ \sum _i \left [G_i -E(G_i)\right ]'[\Omega _i^{(base)
 where \(E(G_i)\) is defined as:
 $$E(G_i)=\sum_{m=1}^{M}2p_m$$
 where \(p_m\) is the minor allele frequency (MAF) which is obtain from the dataframe of <code>maf_data</code>.</p>
+    
     <h2 class="hasAnchor" id="data-format"><a class="anchor" href="#data-format"></a>Data format</h2>
 
     
@@ -233,41 +233,53 @@ The rest columns of the file are genotypes of each individual and codes as 0, 1,
 If more than one sub-populations are included in the samples, multiple MAFs correspond to each specific population should be included in this file and denoted by headers of population specific symbols</p></li>
 </ul>
 
+    
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Chen, W.-M., and Abecasis, G.R. (2007). Family-Based Association
 Tests for Genomewide Association Scans. Am. J. Hum. Genet. 81, 913–926.<br /></p>
+    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span> (<span class='no'>kinship2</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: Matrix</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: quadprog</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span> (<span class='no'>RVFamSq</span>)
 
 <span class='co'>##  load example data</span>
-<span class='no'>data_dir</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"data"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"RVFamSq"</span>)
-<span class='no'>ped_pheno</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='no'>phenofile</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='no'>data_dir</span>,<span class='st'>"/ped_pheno.txt"</span>))</div><div class='output co'>#&gt; <span class='warning'>Warning: cannot open file '/private/var/folders/j9/xf6py0b92xzfyzb63zl48xwr0000gn/T/RtmpNUIpro/temp_libpathb5472906bdd2/RVFamSq/data/ped_pheno.txt': No such file or directory</span></div><div class='output co'>#&gt; <span class='error'>Error in file(file, "rt"): cannot open the connection</span></div><div class='input'><span class='no'>ped_geno</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='no'>data_dir</span>, <span class='st'>"/ped_geno.txt"</span>))</div><div class='output co'>#&gt; <span class='warning'>Warning: cannot open file '/private/var/folders/j9/xf6py0b92xzfyzb63zl48xwr0000gn/T/RtmpNUIpro/temp_libpathb5472906bdd2/RVFamSq/data/ped_geno.txt': No such file or directory</span></div><div class='output co'>#&gt; <span class='error'>Error in file(file, "rt"): cannot open the connection</span></div><div class='input'><span class='no'>maf_data</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='no'>data_dir</span>,<span class='st'>"/AAAS.sfs"</span>), <span class='kw'>header</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='no'>data_dir</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"RVFamSq"</span>)
+<span class='no'>ped_pheno</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='no'>phenofile</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='no'>data_dir</span>,<span class='st'>"/ped_pheno.txt"</span>))
+<span class='no'>ped_geno</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='no'>data_dir</span>, <span class='st'>"/ped_geno.txt"</span>))
+<span class='no'>maf_data</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.table</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='no'>data_dir</span>,<span class='st'>"/AAAS.sfs"</span>), <span class='kw'>header</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
 <span class='co'>## Define the files that save the parameters estimated under the null model.</span>
 <span class='co'>## If the file is not existed, the package will estimate the parameters based on the available data.</span>
-<span class='no'>parafile</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='no'>data_dir</span>,<span class='st'>"/results/paras.rds"</span>)
+<span class='no'>parafile</span><span class='kw'>&lt;-</span><span class='st'>"paras.rds"</span>
 
 <span class='co'>##  Define output directory that save the results</span>
-<span class='no'>out</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='no'>data_dir</span>,<span class='st'>"/results"</span>)
+<span class='no'>out</span><span class='kw'>&lt;-</span><span class='st'>"results"</span>
 
 <span class='co'>## Load phenotype data and calculate the kinship matrix of the pedigree. In this example, we utilize the R package to estimate the kinship of samples based on family structure, but the kinship can also be estimated by genetic variants.</span>
 <span class='no'>kin_pre</span><span class='kw'>&lt;-</span><span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>id</span><span class='kw'>=</span><span class='no'>ped_pheno</span>[,<span class='fl'>2</span>], <span class='kw'>mom</span><span class='kw'>=</span><span class='no'>ped_pheno</span>[,<span class='fl'>4</span>], <span class='kw'>dad</span><span class='kw'>=</span><span class='no'>ped_pheno</span>[,<span class='fl'>3</span>], <span class='kw'>sex</span><span class='kw'>=</span><span class='no'>ped_pheno</span>[,<span class='fl'>5</span>])
-<span class='no'>tped</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/with.html'>with</a></span>(<span class='no'>kin_pre</span>, <span class='fu'><a href='https://rdrr.io/pkg/kinship2/man/pedigree.html'>pedigree</a></span>(<span class='no'>id</span>, <span class='no'>dad</span>, <span class='no'>mom</span>, <span class='no'>sex</span>, <span class='kw'>famid</span><span class='kw'>=</span><span class='no'>ped_pheno</span>[,<span class='fl'>1</span>]))</div><div class='output co'>#&gt; <span class='error'>Error in pedigree(id, dad, mom, sex, famid = ped_pheno[, 1]): Value of 'dadid' not found in the id list 1/1 1/1</span></div><div class='input'><span class='no'>kin</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/kinship2/man/kinship.html'>kinship</a></span>(<span class='no'>tped</span>)</div><div class='output co'>#&gt; <span class='error'>Error in kinship(tped): object 'tped' not found</span></div><div class='input'>
+<span class='no'>tped</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/with.html'>with</a></span>(<span class='no'>kin_pre</span>, <span class='fu'><a href='https://rdrr.io/pkg/kinship2/man/pedigree.html'>pedigree</a></span>(<span class='no'>id</span>, <span class='no'>dad</span>, <span class='no'>mom</span>, <span class='no'>sex</span>, <span class='kw'>famid</span><span class='kw'>=</span><span class='no'>ped_pheno</span>[,<span class='fl'>1</span>]))
+<span class='no'>kin</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/kinship2/man/kinship.html'>kinship</a></span>(<span class='no'>tped</span>)
+
 <span class='co'>## Run RVFamsSq package and calculate the statistical score of the interested gene.</span>
-<span class='fu'>RV_FamSq</span>(<span class='kw'>ped_pheno</span><span class='kw'>=</span><span class='no'>ped_pheno</span>, <span class='kw'>ped_geno</span><span class='kw'>=</span><span class='no'>ped_geno</span>, <span class='kw'>maf_data</span><span class='kw'>=</span><span class='no'>maf_data</span>, <span class='kw'>maf_cutoff</span> <span class='kw'>=</span><span class='fl'>0.02</span>,<span class='kw'>parafile</span><span class='kw'>=</span><span class='no'>parafile</span>,<span class='kw'>covar_col</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>5</span>), <span class='kw'>trait_col</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>6</span>), <span class='kw'>pop_col</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>7</span>),<span class='kw'>out</span><span class='kw'>=</span><span class='no'>out</span>, <span class='kw'>kin</span><span class='kw'>=</span><span class='no'>kin</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: stats4</span></div><div class='output co'>#&gt; <span class='error'>Error in rownames(kin): object 'kin' not found</span></div><div class='input'>
+<span class='fu'>RV_FamSq</span>(<span class='kw'>ped_pheno</span><span class='kw'>=</span><span class='no'>ped_pheno</span>, <span class='kw'>ped_geno</span><span class='kw'>=</span><span class='no'>ped_geno</span>, <span class='kw'>maf_data</span><span class='kw'>=</span><span class='no'>maf_data</span>, <span class='kw'>maf_cutoff</span> <span class='kw'>=</span><span class='fl'>0.02</span>, <span class='kw'>parafile</span><span class='kw'>=</span><span class='no'>parafile</span>, <span class='kw'>covar_col</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>5</span>), <span class='kw'>trait_col</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>6</span>), <span class='kw'>pop_col</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>7</span>), <span class='kw'>out</span><span class='kw'>=</span><span class='no'>out</span>, <span class='kw'>kin</span><span class='kw'>=</span><span class='no'>kin</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: stats4</span></div><div class='output co'>#&gt; [1] "Starting values of parameters are not defined, generating random initial values now..."
+#&gt; [1] "Estimating the values of parameters miu,betax,sitag,sitae"</div><div class='output co'>#&gt; NULL</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
+      
       <li><a href="#value">Value</a></li>
+
       <li><a href="#details">Details</a></li>
+
       <li><a href="#data-format">Data format</a></li>
+
       <li><a href="#references">References</a></li>
+      
       <li><a href="#examples">Examples</a></li>
     </ul>
 

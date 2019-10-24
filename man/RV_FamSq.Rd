@@ -61,7 +61,6 @@ load from the file \code{parafile}.}
 \description{
 A regional association analysis of rare variants and quantitative traits in
 family data
-RV_FamSq <- function(ped_pheno, ped_geno, maf_data, maf_cutoff,parafile,covar_col, trait_col, pop_col=c(), out,kin, estimateAF,start_par)
 }
 \details{
 RVFamSq performed association analysis by estimating the parameters under the null model and calculating the statistical score using these parameters.
@@ -105,17 +104,17 @@ library (kinship2)
 library (RVFamSq)
 
 ##  load example data
-data_dir<-system.file("data", package = "RVFamSq")
+data_dir<-system.file("extdata", package = "RVFamSq")
 ped_pheno<-read.table(phenofile<-paste0(data_dir,"/ped_pheno.txt"))
 ped_geno<-read.table(paste0(data_dir, "/ped_geno.txt"))
 maf_data<-read.table(paste0(data_dir,"/AAAS.sfs"), header = TRUE)
 
 ## Define the files that save the parameters estimated under the null model.
 ## If the file is not existed, the package will estimate the parameters based on the available data.
-parafile<-paste0(data_dir,"/results/paras.rds")
+parafile<-"paras.rds"
 
 ##  Define output directory that save the results
-out<-paste0(data_dir,"/results")
+out<-"results"
 
 ## Load phenotype data and calculate the kinship matrix of the pedigree. In this example, we utilize the R package to estimate the kinship of samples based on family structure, but the kinship can also be estimated by genetic variants.
 kin_pre<-data.frame(id=ped_pheno[,2], mom=ped_pheno[,4], dad=ped_pheno[,3], sex=ped_pheno[,5])
@@ -123,7 +122,8 @@ tped <- with(kin_pre, pedigree(id, dad, mom, sex, famid=ped_pheno[,1]))
 kin <- kinship(tped)
 
 ## Run RVFamsSq package and calculate the statistical score of the interested gene.
-RV_FamSq(ped_pheno=ped_pheno, ped_geno=ped_geno, maf_data=maf_data, maf_cutoff =0.02,parafile=parafile,covar_col=c(5), trait_col=c(6), pop_col=c(7),out=out, kin=kin)
+## Results can be found under `results/` folder.
+RV_FamSq(ped_pheno=ped_pheno, ped_geno=ped_geno, maf_data=maf_data, maf_cutoff =0.02, parafile=parafile, covar_col=c(5), trait_col=c(6), pop_col=c(7), out=out, kin=kin)
 
 }
 \references{
