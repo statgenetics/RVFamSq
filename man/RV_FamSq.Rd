@@ -4,8 +4,8 @@
 \alias{RV_FamSq}
 \title{Rare Variant-Family-Based Score Test for Quantitative Traits}
 \usage{
-RV_FamSq(ped_pheno, ped_geno, maf_data, maf_cutoff, parafile, covar_col,
-  trait_col, pop_col = c(), out, kin, estimateAF, start_par)
+RV_FamSq(ped_pheno, ped_geno, maf_data, maf_cutoff, covar_col, trait_col,
+  pop_col = c(), out, kin, estimateAF, start_par)
 }
 \arguments{
 \item{ped_pheno}{a dataframe of phenotype. The first four columns should be family IDs, 
@@ -23,10 +23,6 @@ The first three columns correspond to the name of the gene, chromosome number, a
 are MAFs of variants in each specific population group obtained from database, e.g., Genome Aggregation Database (gnomAD).}
 
 \item{maf_cutoff}{the cutoff of MAF for rare variants}
-
-\item{parafile}{the path to the file saving parameters estimated under the null model.
-If the file is not existed, the package will estimate the parameters
-using the available data and create a parafile in the path. Otherwise, the package will utilize the parameters in \code{parafile} to calculate the statistical score.}
 
 \item{covar_col}{a integer or a vector of integers indicating which columns of \code{ped_pheno} will be used as covariants of the analysis. Note that 
 multiple covariants are allowed in the analysis.}
@@ -48,6 +44,10 @@ estimate the missing MAF based on the dosage of founder.}
 \item{start_par}{an optional argument that defines the starting values of
 the parameters fitting. User can define specific values to start the
 parameters fitting, otherwise, the starting values will generate randomly.}
+
+\item{parafile}{the path to the file saving parameters estimated under the null model.
+If the file is not existed, the package will estimate the parameters
+using the available data and create a parafile in the path. Otherwise, the package will utilize the parameters in \code{parafile} to calculate the statistical score.}
 }
 \value{
 \item{results}{a data frame results containing the name of the gene,
@@ -112,7 +112,6 @@ maf_data<-read.table(paste0(data_dir,"/AAAS.sfs"), header = TRUE)
 
 ## Define the files that save the parameters estimated under the null model.
 ## If the file is not existed, the package will estimate the parameters based on the available data.
-parafile<-paste0(data_dir,"/paras.rds")
 
 ##  Define output directory that save the results
 out<-"results"
@@ -125,7 +124,7 @@ kin <- kinship(tped)
 ## Run RVFamsSq package and calculate the statistical score of the interested gene. If \\code{parafile} is not existed, the below command will estimate the parameters using the available data.
 ## Once you obtained the values of parameters, you can 
 ## Results can be found under `results/` folder.
-RV_FamSq(ped_pheno=ped_pheno, ped_geno=ped_geno, maf_data=maf_data, maf_cutoff =0.02, parafile=parafile, covar_col=c(5), trait_col=c(6), pop_col=c(7), out=out, kin=kin)
+RV_FamSq(ped_pheno=ped_pheno, ped_geno=ped_geno, maf_data=maf_data, maf_cutoff =0.02, covar_col=c(5), trait_col=c(6), pop_col=c(7), out=out, kin=kin)
 
 }
 \references{

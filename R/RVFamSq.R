@@ -15,16 +15,13 @@
 #' The first three columns correspond to the name of the gene, chromosome number, and position of variants. The rest columns of maf_data
 #' are MAFs of variants in each specific population group obtained from database, e.g., Genome Aggregation Database (gnomAD).
 #' @param maf_cutoff the cutoff of MAF for rare variants 
-#' @param parafile the path to the file saving parameters estimated under the null model.
-#' If the file is not existed, the package will estimate the parameters
-#' using the available data and create a parafile in the path. Otherwise, the package will utilize the parameters in \code{parafile} to calculate the statistical score.
 #' @param covar_col a integer or a vector of integers indicating which columns of \code{ped_pheno} will be used as covariants of the analysis. Note that 
 #' multiple covariants are allowed in the analysis. 
 #' @param trait_col a integer indicating which columns of \code{ped_pheno} will be used as traits.
 #' @param pop_col a integer indicating which columns of \code{ped_pheno} represent the population IDs of the sample.
 #' @param out the directory that save the results. RVFamSq outputs a dataframe results including
 #' the name of the gene, score, p-value of the gene, number of sample size
-#' and number of families
+#' and number of families. In addtion, the values of parameters estimated under the null hyphothesis will be saved under this floder as well with the name "paras.rds"
 #' @param kin a kinship matrix calculated either based on family strtuctures or genomic informations. 
 #' @param estimateAF a dataframe of estimated MAFs that do not oberserved in public datasets. The headers decribing the name 
 #' of the sub-population should be consistent with the headers in \code{maf_data}. If this argument is not defined, RVfamSq will
@@ -35,10 +32,9 @@
 #' @return \item{results}{a data frame results containing the name of the gene,
 #' the value of the score and p-value write into the file named by the name of
 #' the gene under the directory defined by the argument \code{out}.}
-#' \item{paras}{a list of parameters estimated by maximizing the likelihood.
-#' The values of the paras save to the file defined by the argument
-#' \code{parafile}. If the \code{parafile} is existed, the values of the paras
-#' load from the file \code{parafile}.}
+#' \item{paras.rds}{a list of parameters estimated by maximizing the likelihood.
+#' If the file is not existed under the output folder, the package will estimate the parameters
+#' using the available data and create a parafile in the path. Otherwise, the package will load the parameters from \code{paras.rds} under the output folder to calculate the statistical score.
 #' @author Zhihui Zhang and Suzanne Leal
 #' @details RVFamSq performed association analysis by estimating the parameters under the null model and calculating the statistical score using these parameters.
 #' The parameters are estimated by maximizing the multivariate normal likelihood: 
@@ -84,10 +80,6 @@
 #' ped_geno<-read.table(paste0(data_dir, "/ped_geno.txt"))
 #' maf_data<-read.table(paste0(data_dir,"/AAAS.sfs"), header = TRUE)
 #' 
-#' ## Define the files that save the parameters estimated under the null model.
-#' ## If the file is not existed, the package will estimate the parameters based on the available data.
-#' parafile<-paste0(data_dir,"/paras.rds")
-#' 
 #' ##  Define output directory that save the results
 #' out<-"results"
 #' 
@@ -99,13 +91,13 @@
 #' ## Run RVFamsSq package and calculate the statistical score of the interested gene. If \code{parafile} is not existed, the below command will estimate the parameters using the available data.
 #' ## Once you obtained the values of parameters, you can 
 #' ## Results can be found under `results/` folder.
-#' RV_FamSq(ped_pheno=ped_pheno, ped_geno=ped_geno, maf_data=maf_data, maf_cutoff =0.02, parafile=parafile, covar_col=c(5), trait_col=c(6), pop_col=c(7), out=out, kin=kin)
+#' RV_FamSq(ped_pheno=ped_pheno, ped_geno=ped_geno, maf_data=maf_data, maf_cutoff =0.02, covar_col=c(5), trait_col=c(6), pop_col=c(7), out=out, kin=kin)
 #'
 #' @import bbmle 
 #' @import mvtnorm 
 #' @import rlist
 #' @export
-RV_FamSq <- function(ped_pheno, ped_geno, maf_data, maf_cutoff,parafile,covar_col, trait_col, pop_col=c(), out,kin, estimateAF,start_par) {
+RV_FamSq <- function(ped_pheno, ped_geno, maf_data, maf_cutoff,covar_col, trait_col, pop_col=c(), out,kin, estimateAF,start_par) {
   library(bbmle)
   library(mvtnorm)
   library(rlist)
@@ -188,6 +180,12 @@ RV_FamSq <- function(ped_pheno, ped_geno, maf_data, maf_cutoff,parafile,covar_co
     }
   }
   
+  if(!dir.exists(out)) {
+    dir.create(out)
+    print(paste("Creat results folder at",out, collapse = " "))
+  }
+  
+  parafile <- paste0(out,"/paras.rds")
   
   if(!file.exists(parafile)) {
     par_num<-3+length(covar_col)
@@ -222,7 +220,8 @@ RV_FamSq <- function(ped_pheno, ped_geno, maf_data, maf_cutoff,parafile,covar_co
     print("Reading parameters from parafile... ")
     paras<-list.load(parafile)
     print(unlist(paras))
-    
+  }  
+  
     peds_grp_by_fam<-split(seq_len(nrow(ped_data)),ped_data[,1])
     scores<-unlist(lapply(peds_grp_by_fam, function(x) Tscore(ped_data[unlist(x),],maf,maf_cutoff,paras,covar_update_col,trait_update_col,pop_update_col,geno_update_col)))
     upper<-sum(scores[seq(1,length(scores),2)])
@@ -235,6 +234,5 @@ RV_FamSq <- function(ped_pheno, ped_geno, maf_data, maf_cutoff,parafile,covar_co
     pout<-data.frame(gene=gene_name, score=score, p=1-p, sample_size=nrow(ped_data), family_size=length(unique(ped_data[,1])))
     write.table(pout,out, row.names = FALSE, col.names = TRUE, quote=FALSE,sep="\t")
     print(pout)
-  }
   return()
 }
