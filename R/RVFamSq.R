@@ -2,10 +2,11 @@
 #' 
 #' A regional association analysis of rare variants and quantitative traits in
 #' family data
+#'RV_FamSq <- function(ped_pheno, ped_geno, maf_data, maf_cutoff,parafile,covar_col, trait_col, pop_col=c(), out,kin, estimateAF,start_par)
 #' @param ped_pheno a dataframe of phenotype. The first four columns should be family IDs, 
 #' individual IDs, father IDs and mother IDs of each sample.
 #' The ped_pheno can also include columns of covariates and populations IDs. 
-#' The populations IDs indicate which corresponding MAF will be used in the model. 
+#' If more than one population groups are included in the analysis, the column of population IDs should indicate which population specific MAF will be used. 
 #' @param ped_geno a dataframe of genotype. The first two columns are family IDs and individual IDs. 
 #' The rest columns of the ped_geno are genotype score at each sites. The value of genotype score is 0, 1 or 2,
 #' corresponding to number of rare variants observed at each sites. Number of sites included in ped_geno should be equal to the number of rows 
@@ -16,11 +17,11 @@
 #' @param maf_cutoff the cutoff of MAF for rare variants 
 #' @param parafile the path to the file saving parameters estimated under the null model.
 #' If the file is not existed, the package will estimate the parameters
-#' using the available data and create a parafile in the path.
+#' using the available data and create a parafile in the path. Otherwise, the package will utilize the parameters in \code{parafile} to calculate the statistical score.
 #' @param covar_col a integer or a vector of integers indicating which columns of \code{ped_pheno} will be used as covariants of the analysis. Note that 
 #' multiple covariants are allowed in the analysis. 
 #' @param trait_col a integer indicating which columns of \code{ped_pheno} will be used as traits.
-#' @param pop_col a integer indicating which columns of \code{ped_pheno} describe the population group of the sample.
+#' @param pop_col a integer indicating which columns of \code{ped_pheno} represent the population IDs of the sample.
 #' @param out the directory that save the results. RVFamSq outputs a dataframe results including
 #' the name of the gene, score, p-value of the gene, number of sample size
 #' and number of families
@@ -85,7 +86,7 @@
 #' 
 #' ## Define the files that save the parameters estimated under the null model.
 #' ## If the file is not existed, the package will estimate the parameters based on the available data.
-#' parafile<-"paras.rds"
+#' parafile<-paste0(data_dir,"/paras.rds")
 #' 
 #' ##  Define output directory that save the results
 #' out<-"results"
@@ -95,7 +96,8 @@
 #' tped <- with(kin_pre, pedigree(id, dad, mom, sex, famid=ped_pheno[,1]))
 #' kin <- kinship(tped)
 #' 
-#' ## Run RVFamsSq package and calculate the statistical score of the interested gene.
+#' ## Run RVFamsSq package and calculate the statistical score of the interested gene. If \code{parafile} is not existed, the below command will estimate the parameters using the available data.
+#' ## Once you obtained the values of parameters, you can 
 #' ## Results can be found under `results/` folder.
 #' RV_FamSq(ped_pheno=ped_pheno, ped_geno=ped_geno, maf_data=maf_data, maf_cutoff =0.02, parafile=parafile, covar_col=c(5), trait_col=c(6), pop_col=c(7), out=out, kin=kin)
 #'
@@ -128,6 +130,12 @@ RV_FamSq <- function(ped_pheno, ped_geno, maf_data, maf_cutoff,parafile,covar_co
     print("Delete samples without the data of phenotype and covariant")
     ped_pheno<-ped_pheno[-miss_index,]
   }
+  
+  if (length(pop_col)==0) {
+    ped_pheno[,ncol(ped_pheno)+1]<-1
+    pop_col<-c(ncol(ped_pheno)+1)
+  }
+  
   ped_pheno<-ped_pheno[,c(1:4,covar_col,trait_col,pop_col)]
   
   #Estimate mising MAF using external source or by dosage of founders
