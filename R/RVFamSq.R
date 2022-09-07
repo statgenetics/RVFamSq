@@ -113,6 +113,7 @@ RV_FamSq <- function(ped_pheno, ped_geno, maf_data, maf_cutoff,covar_col, trait_
   maf_pre<-matrix(as.numeric(maf_data[,4:ncol(maf_data)]),nrow=nrow(maf_data),ncol=ncol(maf_data)-3)
   rvs_index<-unique(which(maf_pre<maf_cutoff | is.na(maf_pre),arr.ind = TRUE)[,1])
   maf<-maf_pre[rvs_index,]
+  if(ncol(maf_data == 4)) maf <- matrix(maf)
   colnames(maf)<-colnames(maf_data)[4:ncol(maf_data)]
   ped_geno<-ped_geno[,c(1,2,2+rvs_index)]
   
@@ -124,8 +125,8 @@ RV_FamSq <- function(ped_pheno, ped_geno, maf_data, maf_cutoff,covar_col, trait_
   }
   
   if (length(pop_col)==0) {
-    ped_pheno[,ncol(ped_pheno)+1]<-1
     pop_col<-c(ncol(ped_pheno)+1)
+    ped_pheno <- cbind(ped_pheno, rep(1, nrow(ped_pheno)))
   }
   
   ped_pheno<-ped_pheno[,c(1:4,covar_col,trait_col,pop_col)]
