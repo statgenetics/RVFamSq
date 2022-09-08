@@ -233,7 +233,7 @@ RV_FamSq <- function(ped_pheno, ped_geno, maf_data, maf_cutoff,covar_col, trait_
     gene_name=as.character(maf_data[1,1])
     out<-paste(c(out,"/", gene_name,".out"),collapse ="")
     pout<-data.frame(gene=gene_name, score=score, p=1-p, sample_size=nrow(ped_data), family_size=length(unique(ped_data[,1])))
-    write.table(pout,out, row.names = FALSE, col.names = TRUE, quote=FALSE,sep="\t")
-    print(pout)
-  return()
+    # write.table(pout, out, row.names = FALSE, col.names = TRUE, quote=FALSE,sep="\t")
+    # print(pout)
+  return(pout)
 }
